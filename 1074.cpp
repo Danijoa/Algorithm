@@ -1,61 +1,81 @@
 #include <iostream>
-#include <math.h>
 using namespace std;
 
-int n, myX, myY;
+int n;
+int tarX, tarY;
 int cnt = 0;
 
-void solution(int size, int x, int y)
+void solution(int size, int curX, int curY)
 {
-	if (size == 2)
+	if (curX == tarX && curY == tarY)
 	{
-		if ((x == myX) && (y == myY))
-		{
-			cout << cnt;
-			return;
-		}
-		cnt++;
-
-		if ((x == myX) && (y + 1 == myY))
-		{
-			cout << cnt;
-			return;
-		}
-		cnt++;
-
-		if ((x + 1 == myX) && (y == myY))
-		{
-			cout << cnt;
-			return;
-		}
-		cnt++;
-
-		if ((x + 1 == myX) && (y + 1 == myY))
-		{
-			cout << cnt;
-			return;
-		}
-		cnt++;
-
+		cout << cnt;
 		return;
 	}
+	cnt++;	//해당 위치와 일치하지 않으면 +1씩 증가해나감
+	if (curX == tarX && curY + 1 == tarY)
+	{
+		cout << cnt;
+		return;
+	}
+	cnt++;
+	if (curX + 1 == tarX && curY == tarY)
+	{
+		cout << cnt;
+		return;
+	}
+	cnt++;
+	if (curX + 1 == tarX && curY + 1 == tarY)
+	{
+		cout << cnt;
+		return;
+	}
+	cnt++;
 
-	//1
-	solution(size / 2, x, y);
-	//2				   
-	solution(size / 2, x, y + size / 2);
-	//3				   
-	solution(size / 2, x + size / 2, y);
-	//4				   
-	solution(size / 2, x + size / 2, y + size / 2);
+	return;
 }
 
 int main()
 {
-	cin >> n >> myX >> myY;
+	cin >> n >> tarX >> tarY;
+	int size = 1 << n;	//2진수 shift 연산
 
-	int line = pow(2, n);
-	solution(line, 0, 0);
+	//타겟 위치가 사각형에서 몇사분면에 있는지 4등분으로 나누어 가며 확인
+	int position;
+	while (size != 2)
+	{
+		if (tarX < size / 2)
+		{
+			if (tarY < size / 2)
+			{
+				position = 1;
+			}
+			else
+			{
+				position = 2;
+				tarY -= (size / 2);
+			}
+		}
+		else
+		{
+			if (tarY < size / 2)
+			{
+				position = 3;
+				tarX -= (size / 2);
+			}
+			else
+			{
+				position = 4;
+				tarX -= (size / 2);
+				tarY -= (size / 2);
+			}
+		}
+
+		size = size / 2;
+		cnt += size * size * (position - 1);
+	}
+
+	solution(size, 0, 0);
 
 	return 0;
 }
