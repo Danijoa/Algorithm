@@ -1,124 +1,121 @@
 #include <iostream>
-#include <vector>
-#define MAX 1111
+#define MAX 1001
 using namespace std;
 
-int n, m; // 세로, 가로
-int q;	//퀸 개수
-int k;	//나이트 개수
-int p;	//포운 개수
-char chess[MAX][MAX];	//체스판
-int chess2[MAX][MAX];	//체스판
+int x, y;
+char map[MAX][MAX];
+int visited[MAX][MAX];
 
-//오위 오아래 왼위 왼 아래
-int dirKX[8] = { -2, 2, -2, 2, -1, 1, -1, 1 };
-int dirKY[8] = { 1, 1, -1, -1, 2, 2, -2, -2 };
+//Queen 좌우대각선 
+int qX[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
+int qY[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-//상 하 좌 우 오위 오아래 왼위 왼아래(방향)
-int dirQX[8] = { -1, 1, 0, 0, -1, 1, -1, 1};
-int dirQY[8] = { 0, 0, -1, 1, 1, 1, -1, -1};
+// Knight 두칸앞+좌or우
+int kX[8] = { -2, -2, 2, 2, -1, 1, -1, 1 };
+int kY[8] = { -1, 1, -1, 1, -2, -2, 2, 2 };
 
-void queen(int i, int j)
+void Queen(int i, int j)
 {
-	//좌 직선
 	for (int k = 0; k < 8; k++)
 	{
-		int tempQX = i + dirQX[k];
-		int tempQY = j + dirQY[k];
+		int nextX = i + qX[k];
+		int nextY = j + qY[k];
 
 		while (true)
 		{
-			if (chess[tempQX][tempQY] == 'k' || chess[tempQX][tempQY] == 'p' || chess[tempQX][tempQY] == 'q' ||
-				tempQX < 1 || tempQX > n || tempQY < 1 || tempQY > m)
-			{
+			if (map[nextX][nextY] == 'k' || map[nextX][nextY] == 'p' || map[nextX][nextY] == 'q' || nextX < 1 || nextX > x || nextY < 1 || nextY > y)
 				break;
-			}
-			
-			chess2[tempQX][tempQY] = 1;
 
-			tempQX += dirQX[k];
-			tempQY += dirQY[k];
+			visited[nextX][nextY] = 1;
+
+			nextX += qX[k];
+			nextY += qY[k];
 		}
 	}
 }
 
-void knight(int i, int j)
+void Knight(int i, int j)
 {
 	for (int k = 0; k < 8; k++)
 	{
-		int tempKX = i + dirKX[k];
-		int tempKY = j + dirKY[k];
-
-		if ((tempKX >=1 && tempKX <=n) && (tempKY >= 1 && tempKY <= m))
-		{
-			chess2[tempKX][tempKY] = 1;
-		}
+		int nextX = i + kX[k];
+		int nextY = j + kY[k];
+		if ((nextX >= 1 && nextX <= x) && (nextY >= 1 && nextY <= y))
+			visited[nextX][nextY] = 1;
 	}
 }
 
-void solution()
+void solve()
 {
-	for (int i = 1; i <= n; i++)
+	for (int i = 1; i <= x; i++)
 	{
-		for (int j = 1; j <= m; j++)
+		for (int j = 1; j <= y; j++)
 		{
-			if (chess[i][j] == 'k')
+			if (map[i][j] == 'q')
 			{
-				knight(i, j);
+				Queen(i, j);
 			}
-
-			if (chess[i][j] == 'q')
+			if (map[i][j] == 'k')
 			{
-				queen(i, j);
+				Knight(i, j);
 			}
 		}
 	}
 }
+
 
 int main()
 {
-	cin >> n >> m;
+	cin >> x >> y;
 
-	cin >> q;
-	for (int i = 0; i < q; i++)
+	//fill_n(map[0][0], map[MAX][MAX], '0');
+
+	for (int i = 1; i <= x; i++)
 	{
-		int a, b;
-		cin >> a >> b;
-		chess[a][b] = 'q';
-		chess2[a][b] = 1;
-	}
-
-	cin >> k;
-	for (int i = 0; i < k; i++)
-	{
-		int a, b;
-		cin >> a >> b;
-		chess[a][b] = 'k';
-		chess2[a][b] = 1;
-	}
-
-	cin >> p;
-	for (int i = 0; i < p; i++)
-	{
-		int a, b;
-		cin >> a >> b;
-		chess[a][b] = 'p';
-		chess2[a][b] = 1;
-	}
-
-	solution();
-
-	int cnt = 0;
-	for (int i = 1; i <= n; i++)
-	{
-		for (int j = 1; j <= m; j++)
+		for (int j = 1; j <= y; j++)
 		{
-			if (chess2[i][j] != 1)
-			{
-				cnt += 1;
-			}
+			map[x][y] = '0';
 		}
 	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		char chess;
+		switch (i) {
+		case 0:
+			chess = 'q';
+			break;
+		case 1:
+			chess = 'k';
+			break;
+		case 2:
+			chess = 'p';
+			break;
+		}
+
+		int num = 0;
+		cin >> num;
+		for (int j = 0; j < num; j++)
+		{
+			int a, b;
+			cin >> a >> b; 
+			map[a][b] = chess;
+			visited[a][b] = 1;
+		}
+	}
+
+	solve();
+
+	int cnt = 0;
+	for (int i = 1; i <= x; i++)
+	{
+		for (int j = 1; j <= y; j++)
+		{
+			if (visited[i][j] != 1)
+				cnt++;
+		}
+	}
+
 	cout << cnt;
 
 	return 0;
