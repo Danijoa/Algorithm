@@ -12,7 +12,7 @@ struct cmp
 	{
 		if (a.first == b.first)	//첫 인덱스가 같으면 뒤에 인덱스 비교
 		{
-			return a.second > b.second;	//a가 b보다 작은게 참일 때, true 반환 , a가 더 작다
+			return a.second > b.second;	//위치도 더 작은것...이 우선....
 		}
 		else
 			return a.first > b.first; //a가 b보다 큰게 참일 때, true 반환 , a가 더 크다
