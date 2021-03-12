@@ -15,11 +15,13 @@ int cnt = 0;
 int queen[MAX];
 
 bool check(int cur)
-{
-	//다음 퀸을 놓을 수 없는 경우
-	for (int i = 1; i < cur; i++)
+{ 
+	//(1~cur-1)열에 있는 퀸을 비교해 가며
+	//42번째 줄에 있는 queen[row + 1] = i (= queen[cur]) 위치에
+	//퀸을 놓을 수 있는지 확인한다
+	for (int i = 1; i < cur; i++)	//열
 	{
-		if (queen[i] == queen[cur] || (abs(queen[i] - queen[cur]) == abs(i - cur)))	//같은 행에 있지 않다 || 대각선에 있다
+		if (queen[i] == queen[cur] || (abs(queen[i] - queen[cur]) == abs(i - cur)))	//위치 (같은 행에 있지 않다 || 대각선에 있다)
 		{
 			return false;
 		}
