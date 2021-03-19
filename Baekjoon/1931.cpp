@@ -20,7 +20,7 @@ int main()
 		myQ.push_back(pair<int, int>(b, a));
 	}
 
-	//끝나는 시간 기준 정렬
+	//끝나는 시간 기준 정렬: 최대한 짧게 사용하고 빠지는 것이 좋음
 	sort(myQ.begin(), myQ.end());
 
 	endT = myQ.front().first;
