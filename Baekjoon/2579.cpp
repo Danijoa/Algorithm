@@ -1,41 +1,30 @@
 #include <iostream>
-#include <algorithm>	//max
-#include <cstring>	//memset
+#include <algorithm>
 using namespace std;
-
-int stairNumber;	//계단 수
-int stairScore[333];	//각 계단 점수 저장
-int storeScore[333];	//인덱스 값에 위치 하기 까지 최대값 저장
-
-int solution(int stairNumber)
-{
-	//처음 시작 3칸만 미리 결정 해 줌
-	storeScore[1] = stairScore[1];
-	storeScore[2] = stairScore[2] + stairScore[1];
-	storeScore[3] = max(stairScore[3] + stairScore[2], stairScore[3] + storeScore[1]);
-
-	//이후는 계산식으로 해결
-	for (int i=4; i<= stairNumber; i++)
-	{
-		//현재 계단[i]로 올 수 있는 경우
-		//[i-1]를 밟고 올라오는 경우(연속 3칸 불가) 
-		//or [i-1]를 밟지 않고 올라오는 경우
-		storeScore[i] = max(stairScore[i] + stairScore[i - 1] + storeScore[i - 3], stairScore[i] + storeScore[i - 2]);
-	}
-
-	return storeScore[stairNumber];
-}
 
 int main()
 {
-	cin >> stairNumber;
+	//마지막 + 마지막_누적-2
+	//마지막 + 마지막-1+ 마지막_누적-3
 
-	for (int i = 1; i <= stairNumber; i++)
+	int step;
+	cin >> step;
+	int stepScore[301];
+	for (int i = 1; i <= step; i++)
 	{
-		cin >> stairScore[i];
+		cin >> stepScore[i];
 	}
 
-	memset(storeScore, 0, sizeof(storeScore));
+	int maxScore[301];
+	maxScore[1] = stepScore[1];
+	maxScore[2] = maxScore[1] + stepScore[2];
+	maxScore[3] = max(stepScore[3] + maxScore[3 - 2], stepScore[3] + stepScore[3 - 1]);
+	for (int i = 4; i <= step; i++)
+	{
+		maxScore[i] = max((stepScore[i] + maxScore[i - 2]), (stepScore[i] + stepScore[i - 1] + maxScore[i - 3]));
+	}
 
-	cout << solution(stairNumber);
+	cout << maxScore[step];
+
+	return 0;
 }
