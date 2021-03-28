@@ -62,3 +62,82 @@ int main()
 
 	return 0;
 }
+/*
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int x, y;
+char color[101][101];
+queue<pair<int, int>> myQ;
+int dirX[4] = {-1, 1, 0, 0};
+int dirY[4] = { 0, 0, -1, 1 };
+int ansW = 0, ansB = 0;
+int tempAns;
+
+int BFS(int i, int j, char curC)
+{
+	int tempCnt = 0;
+	myQ.push(make_pair(i, j));
+	color[i][j] = '0';
+
+	while (!myQ.empty())
+	{
+		int curX = myQ.front().first;
+		int curY = myQ.front().second;
+		myQ.pop();
+		tempCnt++;
+
+		for (int i = 0; i < 4; i++)
+		{
+			int nextX = curX + dirX[i];
+			int nextY = curY + dirY[i];
+
+			if (nextX < 0 || nextX >= x || nextY < 0 || nextY >= y)
+				continue;
+
+			if (color[nextX][nextY] == curC)
+			{
+				color[nextX][nextY] = '0';
+				myQ.push(make_pair(nextX, nextY));
+			}
+		}
+	}
+
+	return tempCnt;
+}
+
+int main()
+{
+	cin >> y >> x;
+	for (int i = 0; i < x; i++)
+	{
+		for (int j = 0; j < y; j++)
+		{
+			//%c앞에 공백을 사용하여 스페이스를 넣으면 \n을 white space로 인식하여 넘김
+			scanf_s(" %1c", &color[i][j]);
+		}
+	}
+	for (int i = 0; i < x; i++)
+	{
+		for (int j = 0; j < y; j++)
+		{
+			if (color[i][j] == 'W')
+			{
+				tempAns = BFS(i, j, 'W');
+				ansW += tempAns * tempAns;
+			}
+			if (color[i][j] == 'B')
+			{
+				tempAns = BFS(i, j, 'B');
+				ansB += tempAns * tempAns;
+			}
+		}
+	}
+
+	cout << ansW << " " << ansB;
+
+
+	return 0;
+}
+*/
