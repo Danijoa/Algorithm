@@ -1,84 +1,103 @@
-#include <iostream>
-#include <algorithm>
-#define MAX 987654321
+#include<iostream>
+#include <cstring>
+#include <queue>
 using namespace std;
 
-int num; //회원수
-int relation[51][51]; //회원 친분관계
-int score[51]; //회원 점수
-int president = MAX; //회장 후보 점수
-int number = 0; //회장 후보 수
+int memNum; //<50
+int map[51][51];
+queue<pair<int, int> > myP;	//회원번호, 연결수
+int visited[51][51];
+
+void BFS(int curNum)
+{
+	myP.push(make_pair(curNum, 0));
+	visited[curNum][curNum] = -1;
+
+	while (!myP.empty())
+	{
+		int cNum = myP.front().first;
+		int cCount = myP.front().second;
+		myP.pop();
+
+		for (int i=1; i<= memNum; i++)
+		{
+			if (map[cNum][i] == 1 && visited[curNum][i] == 0)
+			{
+				myP.push(make_pair(i, cCount + 1));
+				visited[curNum][i] = cCount + 1;
+			}
+		}
+	}
+}
 
 int main()
 {
-	for (int i = 1; i < 51; i++) //초기화
+	cin >> memNum;
+	memset(map, 0, sizeof(map));
+	int a, b;
+	while (true)
 	{
-		for (int j = 1; j < 51; j++)
-		{
-			if (i == j)
-			{
-				relation[i][j] = 0;
-			}
-			else
-			{
-				relation[i][j] = MAX;
-			}
-		}
-	}
-
-	for (int i = 1; i < 51; i++) //초기화
-	{
-		score[i] = MAX;
-	}
-
-	cin >> num;
-
-	while (1)
-	{
-		int a, b;
 		cin >> a >> b;
 		if (a == -1 && b == -1)
 			break;
-		relation[a][b] = relation[b][a] = 1; // 양방향
+		map[a][b] = 1;
+		map[b][a] = 1;
 	}
 
-	for (int k = 1; k <= num; k++) //k를 거쳐
+	memset(visited, 0, sizeof(visited));
+	for (int i = 1; i <= memNum; i++)
 	{
-		for (int i = 1; i <= num; i++) //i에서 출발하여
+		BFS(i);
+	}
+	/*for (int i = 1; i <= memNum; i++)
+	{
+		for (int j = 1; j <= memNum; j++)
 		{
-			for (int j = 1; j <= num; j++) //j에 도달하는
+			cout << visited[i][j] << " ";
+		}
+		cout << endl;
+	}*/
+	
+	//결과 출력
+	int max[51];
+	memset(max, 0, sizeof(max));
+	for (int i = 1; i <= memNum; i++)
+	{
+		for (int j = 1; j <= memNum; j++)
+		{
+			if (max[j] < visited[i][j])
 			{
-				if (relation[i][j] > relation[i][k] + relation[k][j])
-				{
-					relation[i][j] = relation[i][k] + relation[k][j]; //최소 거리 선택
-				}
+				max[j] = visited[i][j];
 			}
 		}
 	}
 
-	for (int i = 1; i <= num; i++)
+	int min = 100;
+	for (int i = 1; i <= memNum; i++)
 	{
-		int temp = 0;
-		for (int j = 1; j <= num; j++)
+		if (min > max[i])
+			min = max[i];
+	}
+	cout << min <<" ";
+
+	vector<int> sMem;
+	int cnt = 0;
+	for (int i = 1; i <= memNum; i++)
+	{
+		if (max[i] == min)
 		{
-			if (i == j)
-				continue;
-			temp = max(temp, relation[i][j]); //i가 친구들j와 가지는 가장 높은 점수를(높을수록 친분이 적음)
+			sMem.push_back(i);
+			cnt++;
 		}
-		score[i] = temp; //i의 최종 점수로 저장
-		president = min(temp, president); //후보i중 가장 낮은 점수를 추출
 	}
+	cout << cnt << endl;
 
-	for (int i = 1; i <= num; i++)
+	for (int i = 0; i < sMem.size(); i++)
 	{
-		if (president == score[i])
-			number++;
+		cout << sMem[i] << " ";
 	}
-	cout << president << " "<< number << "\n";
+	
 
-	for (int i = 1; i <= num; i++)
-	{
-		if (president == score[i])
-			cout << i << " ";
-	}
+//회장점수 회장후보수
+//회장 오름차순 정렬
 }
