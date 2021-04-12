@@ -9,8 +9,8 @@ int main()
 	int studentNUM, compareNUM;
 	cin >> studentNUM >> compareNUM;
 
-	vector<int> compVector[MAX]; //학생들 끼리의 비교 방향그래프
-	int stuIndegree[MAX] = { 0 }; //각 학생들의 진입차수
+	vector<int> compVector[MAX];	 //학생들 끼리의 비교 방향그래프
+	int stuIndegree[MAX] = { 0 }; 	//각 학생들의 진입차수(=앞에 누군가 있는 조건이면 +1)
 
 	int stu1, stu2; //stu1은 stu2 앞에 있어야 한다
 	for (int i = 0; i < compareNUM; i++)
