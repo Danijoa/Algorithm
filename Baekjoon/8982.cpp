@@ -3,63 +3,66 @@
 #include <vector>
 using namespace std;
 
-typedef pair<int, int> coor;	
-vector<coor> depth;	//<수족관 깊이, 빠져나간 물 깊이> 
-vector<int> hole;	//구멍이 있는 열의 위치
-int row;	//수족관 열 개수
+typedef pair<int, int> coor;
+vector<coor> eDepth;			// <수족관 깊이(y), 빠져나간 물 깊이>
+vector<int> xHole;				// 구멍 열(x)위치
+int row;						// 열 개수
 
 int main()
 {
-	//(x, y) (몇번째 row, 몇번째 column)
-	
-	int edgeNum;
-	cin >> edgeNum;
-	
-	int x, y, x2, y2;
-	cin >> x >> y;	//첫(0,0)
-	for (int i = 0; i < (edgeNum / 2 - 1); i++)	//수족관 밑 변이 되는 꼭지점 두개씩 묶어서
+	//꼭짓점
+	int edge;
+	cin >> edge;
+
+	int x1, y1, x2, y2;
+	cin >> x1 >> y1;							//첫(0,0)
+	for (int i = 0; i < (edge / 2 - 1); i++)	//수족관 밑 변이 되는 꼭기점 두개씩 묶어서 저장 할 것이기에 for문도 반토막
 	{
-		cin >> x >> y >> x2 >> y2;	//y=y2
-		for (int j = x; j < x2; j++)
+		cin >> x1 >> y1 >> x2 >> y2;			//y1=y2
+		for (int j = x1; j < x2; j++)
 		{
-			depth.push_back({ y,0 });
+			eDepth.push_back({ y1, 0 });
 		}
 	}
-	cin >> x >> y;	//마지막 (a,0)
-	row = x;
+	cin >> x2 >> y2;							//마지막(x2,0)
+	row = x2;
 
-	int holeNum;
-	cin >> holeNum;
-	for (int i = 0; i < holeNum; i++)
+	//구멍
+	int hole;
+	cin >> hole;
+
+	for (int i = 0; i < hole; i++)
 	{
-		cin >> x >> y >> x2 >> y2;
-		hole.push_back(x);
+		cin >> x1 >> y1 >> x2 >> y2;
+		xHole.push_back(x1);
 	}
 
-	for (int i = 0; i < hole.size(); i++)	//첫번째 구멍 부터 마지막 구멍까지 확인해가며
+	//각 열마다 빠져나갈 깊이 계산
+	for (int i = 0; i < xHole.size(); i++)		//첫번째 구멍 부터 마지막 구멍까지 확인해가며
 	{
-		int holeX = hole[i];	//구멍이 있는 곳 위치
-		int curDepth = depth[holeX].first;	//구멍이 있는 곳 깊이
-		depth[holeX].second = curDepth;	//구멍이 있는 곳 물 빠져 나간 깊이 저장
+		int curHole = xHole[i];					//현재 구멍 x열 위치
+		int curDepth = eDepth[curHole].first;	//현재 구멍 y 깊이
+		eDepth[curHole].second = curDepth;		//현재 구멍이 있는 열에서 물이 빠진 깊이 저장(다 빠져 나감)
 
-		for (int j = holeX - 1; j >= 0; j--)	//구멍 왼쪽 열 확인
+		for (int j = curHole - 1; j >= 0; j--)					//현재 구멍있는 열 기준 왼쪽으로 하나씩 이동하면서 확인
 		{
-			curDepth = min(curDepth, depth[j].first);	//나보다 더 낮은 깊이 만나면 더 낮은 깊이로 왼쪽으로 이동하면서 물 뺌(물빠지는 원리 생각해보면 됨)
-			depth[j].second = max(curDepth, depth[j].second);	//가장 깊은 배수량 선택
+			curDepth = min(curDepth, eDepth[j].first);			//현재 구멍 깊이 보다 더 얕은 깊이를 만나면 그 깊이로 왼쪽으로 이동하면서 물을 뺌(물 빠지는 원리 생각해보면 됨)
+			eDepth[j].second = max(curDepth, eDepth[j].second);	//현재 깊이랑 이미 줄어든 깊이 비교하여 더 깊은것 선택
 		}
 
-		curDepth = depth[holeX].first;	//다시 구멍위치에서 시작해서
-		for (int j = holeX + 1; j < row; j++)	//구멍 오른쪽 열 확인
+		curDepth = eDepth[curHole].first;		//다시 현재 깊이로 돌아와서
+		for (int j = curHole + 1; j < row; j++)	//오른똑 열 확인하기
 		{
-			curDepth = min(curDepth, depth[j].first);	
-			depth[j].second = max(curDepth, depth[j].second);	
+			curDepth = min(curDepth, eDepth[j].first);
+			eDepth[j].second = max(curDepth, eDepth[j].second);
 		}
 	}
 
+	//수족관에 남아있는 양 계산
 	int answer = 0;
 	for (int i = 0; i < row; i++)
 	{
-		answer += depth[i].first - depth[i].second;
+		answer += (eDepth[i].first - eDepth[i].second);
 	}
 	cout << answer;
 
