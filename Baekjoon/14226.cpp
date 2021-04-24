@@ -4,7 +4,7 @@ using namespace std;
 
 struct myData
 {
-	int time;
+	int time;	//
 	int out;
 	int store;
 };
