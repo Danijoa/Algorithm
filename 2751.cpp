@@ -77,6 +77,7 @@ int main()
 		cin >> number[i];
 	}
 
+	//합병정렬
 	mergeSort(number, 0, len - 1);
 
 	for (int i = 0; i < len; i++)
