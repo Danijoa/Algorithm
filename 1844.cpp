@@ -22,7 +22,7 @@ int solution(vector<vector<int> > maps)
     MyCorr startCorr = { 0,0 };
 
     /*bool** visited;
-    *visited = new bool[n];
+    visited = new bool*[n];
     for (int i = 0; i < n; i++)
     {
         visited[i] = new bool[m];
