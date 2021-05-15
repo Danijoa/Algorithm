@@ -56,7 +56,7 @@ vector<int> solution(int num)
         for (int j = 0; j <= i; j++)
         {
             cout << tower[i][j] <<" ";
-        }
+        } 
         cout << endl;
     }*/
 
