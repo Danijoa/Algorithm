@@ -1,118 +1,81 @@
 #include <iostream>
 #include <algorithm>
-#define MAX 1000001
+#include <vector>
+#include <queue>
+#define MAX 3000001
+#define INF 987654321
 using namespace std;
 
-int n;	//마을 개수
-int m;	//길 개수
-int x;	//파티 마을 번호
-int** backVill;	//마을 인접 행렬
-int** goVill;	//반대로 마을 인접 행렬
-int* back;
-int* go;
-int* temp;
-int* visited;
+int student, road, party;
+vector<vector<pair<int, int> > > goV;
+vector<vector<pair<int, int> > > backV;
+int time[MAX];
+int sumTime[MAX];
 
-int* dijkstra(int x, int** v)
+void dijkstra(int start, vector<vector<pair<int, int> > >& graphV)	// & *
 {
-	//temp(거리저장)생성 및 초기화
-	temp = new int[n+1];
-	for (int i = 0; i < n + 1; i++)
-	{
-		temp[i] = MAX;
-	}
-	temp[x] = 0;
+	// (시작마을 ~ 각 마을까지) 거리 저장 배열 생성 및 초기화
+	fill(&time[0], &time[MAX - 1], INF);
+	time[start] = 0;
 
-	//visited생성 및 초기화
-	visited = new int[n + 1];
-	for (int i = 0; i < n + 1; i++)
-	{
-		visited[i] = 0;
-	}
+	priority_queue<pair<int, int>> myQ;
+	myQ.push(make_pair(-1 * time[start], start)); 
 
-	int cur = x;
-	int check = 0;
-	while (check != n)
+	while (!myQ.empty())
 	{
-		check++;
+		int curIndex = myQ.top().second; 
+		int curTime = -1 * myQ.top().first;
+		myQ.pop();
 
-		//cur찾기
-		int minimun = MAX;
-		for (int i = 1; i < n + 1; i++)
+		for (int i = 0; i < graphV[curIndex].size(); i++)
 		{
-			if ((visited[i] == 0) && (minimun >= temp[i]))
-			{
-				minimun = temp[i];
-				cur = i;
-			}
-		}
-		visited[cur] = 1;
+			int nextIndex = graphV[curIndex][i].first;
+			int nextTime = graphV[curIndex][i].second;
 
-		//cur에서 인접 거리 더하기
-		for (int i = 1; i < n+1; i++)
-		{
-			//i누적거리 > cur누적 거리+ cur에서i까지 거리
-			if (temp[i] > temp[cur] + v[cur][i])
+			if (time[nextIndex] > nextTime + time[curIndex])	
 			{
-				temp[i] = temp[cur] + v[cur][i];
+				time[nextIndex] = nextTime + time[curIndex];
+				myQ.push(make_pair(-1 * time[nextIndex], nextIndex));
 			}
 		}
 	}
 
-	return temp;
+	for (int i = 1; i <= student; i++)
+	{
+		sumTime[i] += time[i];
+	}
 }
 
 int main()
 {
-	cin >> n >> m >> x;
+	cin >> student >> road >> party;
 
-	//back, go, vill 생성
-	back = new int[n + 1];
-
-	go = new int[n + 1];
-	
-	backVill = new int* [n+1];
-	for (int i = 0; i < n+1; i++)
+	// 마을 벡터 생성 및 거리 입력
+	backV.resize(student + 1);
+	goV.resize(student + 1);
+	int s, e, t;
+	for (int i = 0; i < road; i++)
 	{
-		backVill[i] = new int[n+1];
-	}
-	
-	goVill = new int* [n + 1];
-	for (int i = 0; i < n + 1; i++)
-	{
-		goVill[i] = new int[n + 1];
+		cin >> s >> e >> t;
+		backV[s].push_back(make_pair(e, t));
+		goV[e].push_back(make_pair(s, t));
 	}
 
-	//초기화
-	for (int i = 0; i < n+1; i++)
+	// goTime 이랑 backTime 합 저장 할 곳
+	fill(&sumTime[0], &sumTime[MAX - 1], 0);
+
+	// 시작마을 ~ 각 마을까지의 최단거리 찾기
+	dijkstra(party, goV);
+	dijkstra(party, backV);
+
+	// 출력
+    int max = 0;
+	for (int i = 1; i <= student; i++)
 	{
-		for (int j = 0; j < n+1; j++)
-		{
-			backVill[i][j] = MAX;
-			goVill[i][j] = MAX;
-		}
+        if(max < sumTime[i])
+            max = sumTime[i];
 	}
+    cout << max;
 
-	//거리 입력
-	int start, end, dis;
-	for (int i = 0; i < m; i++)
-	{
-		cin >> start >> end >> dis;
-		backVill[start][end] = dis;
-		goVill[end][start] = dis;
-	}
-
-	//돌아오는길
-	back = dijkstra(x, backVill);
-
-	//가는길
-	go = dijkstra(x, goVill);
-
-	//비교 및 결과
-	int answer = back[1]+go[1];
-	for (int i = 2; i < n + 1; i++)
-	{
-		answer = max(answer, back[i]+go[i]);
-	}
-	cout << answer;
+	return 0;
 }
