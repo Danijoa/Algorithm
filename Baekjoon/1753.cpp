@@ -1,47 +1,41 @@
-#include <iostream>
-#include <vector>
+include <iostream>
 #include <algorithm>
+#include <vector>
 #include <queue>
-
+#define MAX 3000001
+#define INF 987654321
 using namespace std;
 
-#define MAX 3000001 //거리 최대 합
+int vertex, edge;
+int start;
+vector<vector<pair<int, int> > > myGraph;
+int dist[MAX];
 
-int v; //정점 개수
-int e; //간선 개수
-int k; //시작 정점
-vector<vector<pair<int, int>>> myV; //인접 리스트
-int* dist; //최소 거리 저장(양수)
-
-
-void dijkstra(int k)
+void dijkstra(int start)
 {
-	dist[k] = 0;
+	dist[start] = 0;
 
 	priority_queue<pair<int, int>> myQ;
-	myQ.push(make_pair(dist[k], k)); //거리, 인덱스, 거리순 정렬
+	myQ.push(make_pair(-1 * dist[start], start)); // 거리, 인덱스 -> 거리순 오름차순 정렬
 
-	while(myQ.empty() != true)
+	while (!myQ.empty())
 	{
 		int curIndex = myQ.top().second; //큐에 저장된 거리가 가장 짧은 마을 인덱스
 		int curDist = -1 * myQ.top().first;
-
 		myQ.pop();
 
-		if (curDist > dist[curIndex])
-		{
-			continue;
-		}
+		//if(curDist > dist[curIndex])
+			//continue;
 
-		for (int i = 0; i < myV[curIndex].size(); i++) //인접 마을 돌며 확인
+		for (int i = 0; i < myGraph[curIndex].size(); i++) // 인접 마을 돌며 확인
 		{
-			int nIndex = myV[curIndex][i].first;
-			int nDist = myV[curIndex][i].second;
+			int nextIndex = myGraph[curIndex][i].first;
+			int nextDist = myGraph[curIndex][i].second;
 
-			if (dist[curIndex] + nDist < dist[nIndex])	//비교
+			if (dist[nextIndex] > nextDist + dist[curIndex])	// 비교
 			{
-				dist[nIndex] = dist[curIndex] + nDist;
-				myQ.push(make_pair(-dist[nIndex], nIndex));
+				dist[nextIndex] = nextDist + dist[curIndex];
+				myQ.push(make_pair(-1 * dist[nextIndex], nextIndex));
 			}
 		}
 
@@ -50,39 +44,31 @@ void dijkstra(int k)
 
 int main()
 {
-	cin >> v >> e;
-	cin >> k;
+	cin >> vertex >> edge;
+	cin >> start;
 
-	//마을 벡터 생성
-	myV.resize(v + 1);
-
-	//거리 저장 배열 생성 및 초기화
-	dist = new int[v + 1];
-	for (int i = 0; i < v + 1; i++)
+	// 마을 벡터 생성 및 거리 입력
+	int u, v, w;
+	myGraph.resize(vertex + 1);
+	for (int i = 0; i < edge; i++)
 	{
-		dist[i] = MAX;
+		cin >> u >> v >> w;
+		myGraph[u].push_back(make_pair(v, w));
 	}
 
-	//마을 거리 입력
-	int start, end, distance;
-	for (int i = 0; i < e; i++)
-	{
-		cin >> start >> end >> distance;
-		myV[start].push_back(make_pair(end, distance));
-	}
+	// (시작마을 ~ 각 마을까지) 거리 저장 배열 생성 및 초기화
+	fill(&dist[0], &dist[MAX - 1], INF);
 
-	//시작 마을에서 부터 각 마을 까지의 최단 거리 찾기
-	dijkstra(k);
+	// 시작마을 ~ 각 마을까지의 최단거리 찾기
+	dijkstra(start);
 
-	//출력
-	for (int i = 1; i < v + 1; i++)
+	// 출력
+	for (int i = 1; i <= vertex; i++)
 	{
-		if (dist[i] >= MAX )
-		{
-			cout << "INF" << "\n";
-		}
+		if (dist[i] == INF)
+			cout << "INF\n";
 		else
-			cout << dist[i]<< "\n";
+			cout << dist[i] << "\n";
 	}
 
 	return 0;
