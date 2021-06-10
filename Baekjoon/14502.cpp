@@ -1,157 +1,143 @@
 #include <iostream>
 #include <queue>
+#define MAX 9
 using namespace std;
 
 int n, m;
-//int** virus;
-int virus[8][8];
-//int** test;
-int test[8][8];
-int room;
-int dirX[4] = { -1, 1, 0, 0 };
-int dirY[4] = { 0, 0, -1, 1 };
+int lab[MAX][MAX];
+int test[MAX][MAX];
+int testCopy[MAX][MAX];
+int dir[4][2] = { {0, 1 }, {0, -1}, {-1, 0}, {1, 0} };
+queue<pair<int, int> > myQ;
+int maxSafe;
 
-void spread()
+void BFS()
 {
-	//바이러스
-	//int**  test2 = new int* [n];
-	//for (int i = 0; i < n; i++)
-	//{
-	//	test2[i] = new int[m];
-	//}
-	//test2 = test;
-
-	int test2[8][8];
-
-	for (int x = 0; x < n; x++)
+	// 현재 테스트랩 기준으로 확인할 것
+	for (int i = 0; i < n; i++)
 	{
-		for (int y = 0; y < m; y++)
+		for (int j = 0; j < m; j++)
 		{
-			test2[x][y] = test[x][y];
+			testCopy[i][j] = test[i][j];
 		}
 	}
 
-	queue <pair<int, int>> myQ;
-	for (int x = 0; x < n; x++)
+	// 바이러스 위치 담기
+	for (int i = 0; i < n; i++)
 	{
-		for (int y = 0; y < m; y++)
+		for (int j = 0; j < m; j++)
 		{
-			if (test2[x][y] == 2)
+			if (testCopy[i][j] == 2)
 			{
-				myQ.push(make_pair(x, y));
+				myQ.push(make_pair(i, j));
 			}
 		}
 	}
-
+	
+	// 바이러스 퍼트리기
 	while (!myQ.empty())
 	{
 		int curX = myQ.front().first;
 		int curY = myQ.front().second;
 		myQ.pop();
 
-		for (int i=0; i< 4; i++)
+		for (int i = 0; i < 4; i++)
 		{
-			int tempX = curX + dirX[i];
-			int tempY = curY + dirY[i];
+			int nextX = curX + dir[i][0];
+			int nextY = curY + dir[i][1];
 
-			if (0 <= tempX && tempX < n && 0 <= tempY && tempY < m)
+			// 범위 안에 있음
+			if (nextX < 0 || nextX >= n || nextY < 0 || nextY >= m)	
+				continue;
+
+			// 비어있는 곳 바이러스로 채우고 큐에 넣기
+			if (testCopy[nextX][nextY] == 0)	
 			{
-				if (test2[tempX][tempY] == 0)
-				{
-					test2[tempX][tempY] = 2;
-					myQ.push(make_pair(tempX, tempY));
-				}
+				testCopy[nextX][nextY] = 2;
+				myQ.push(make_pair(nextX, nextY));
 			}
 		}
 	}
 
-	int count = 0;
-	for (int x = 0; x < n; x++)
+	// 초종적 비어있는곳 확인
+	int safe = 0;
+	for (int i = 0; i < n; i++)
 	{
-		for (int y = 0; y < m; y++)
+		for (int j = 0; j < m; j++)
 		{
-			if (test2[x][y] == 0)
-			{
-				count++;
-			}
+			if (testCopy[i][j] == 0)
+				safe += 1;
 		}
 	}
-
-	room = max(room, count);
+	maxSafe = max(maxSafe, safe);
 }
 
-void wall(int num)
-{
-	if (num == 3)
+void makeWall(int wallNum)
+{	
+	// 벽을 3개 세웠으면
+	if (wallNum == 3)
 	{
-		spread();
+		// 안전지역 영역 확인
+		BFS();
 		return;
 	}
 
-	for (int x = 0; x < n; x++)
+	// 현재 test에 저장된 곳 중심으로 확인
+	for (int i = 0; i < n; i++)
 	{
-		for (int y = 0; y < m; y++)
+		for (int j = 0; j < m; j++)
 		{
-			if (test[x][y] == 0)
+			if (test[i][j] == 0)
 			{
-				test[x][y] = 1;
-				wall(num + 1);
-				test[x][y] = 0;
+				test[i][j] = 1;
+				makeWall(wallNum + 1);
+				test[i][j] = 0;
 			}
 		}
 	}
-	
 }
 
 int main()
 {
-	//입력
+	// 연구실 생성
 	cin >> n >> m;
-
-	//연구소
-	//virus = new int* [n];
-	//for (int i = 0; i < n; i++)
-	//{
-	//	virus[i] = new int[m];
-	//}
-
-	for (int x = 0; x < n; x++)
+	for (int i = 0; i < n; i++)
 	{
-		for (int y = 0; y < m; y++)
+		for (int j = 0; j < m; j++)
 		{
-			cin >> virus[x][y];
+			cin >> lab[i][j];
 		}
 	}
 
-	//벽
-	//test = new int* [n];
-	//for (int i = 0; i < n; i++)
-	//{
-	//	test[i] = new int[m];
-	//}
+	// 최대 안전
+	maxSafe = 0;
 
-	//계산
-	for (int x = 0; x < n; x++)
+	// 연구실 비어있는곳 하나씩 확인
+	for (int i = 0; i < n; i++)
 	{
-		for (int y = 0; y < m; y++)
+		for (int j = 0; j < m; j++)
 		{
-			if (virus[x][y] == 0)
+			// 여기 포함 3개 벽 세우러 가자
+			if (lab[i][j] == 0)
 			{
-				for (int x = 0; x < n; x++)
+				//현재 연구실 상태 복사(lab은 그대로 두기 위함)
+				for (int k = 0; k < n; k++)
 				{
-					for (int y = 0; y < m; y++)
+					for (int l = 0; l < m; l++)
 					{
-						test[x][y] = virus[x][y];
+						test[k][l] = lab[k][l];
 					}
 				}
 
-				test[x][y] = 1;
-				wall(1);
-				test[x][y] = 0;
+				// 벽 3개 만들기
+				test[i][j] = 1;	// 빈 곳에 벽 세우고
+				makeWall(1);
+				test[i][j] = 0;	//다시 허물고
 			}
 		}
 	}
 
-	//출력
-	cout << room;
+	cout << maxSafe;
+
+	return 0;
 }
