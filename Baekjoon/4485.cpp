@@ -112,7 +112,7 @@ typedef struct cmp
 {
     bool operator()(mapData& a, mapData& b)
     {
-        return (a.distance > b.distance);
+        return (a.distance < b.distance);
     }
 };
 
@@ -126,13 +126,13 @@ int Dijkstra(int size, pair<int, int> target)
 {
     // 시작 지점 저장
     dist[0][0] = map[0][0];
-    myQ.push({ -1 * map[0][0], 0, 0 });
+    myQ.push({ map[0][0], 0, 0 });
 
     while (!myQ.empty())
     {
         int curX = myQ.top().x;
         int curY = myQ.top().y;
-        int curDist = -1 * myQ.top().distance;
+        int curDist = myQ.top().distance;
         myQ.pop();
 
         if (curDist > dist[curX][curY])	// curDist가 큐에 들어갈 때는 dist[curX][curY](=curDist)가 최단거리였지만, 그 사이 dist[curX][curY]가 바뀌었을 수도 있으니까
@@ -150,7 +150,7 @@ int Dijkstra(int size, pair<int, int> target)
            if (dist[nextX][nextY] > dist[curX][curY] + nextDist)	
             {
                 dist[nextX][nextY] = dist[curX][curY] + nextDist;
-                myQ.push({ -1 * dist[nextX][nextY], nextX , nextY });
+                myQ.push({ dist[nextX][nextY], nextX , nextY });
             }
         }
     }
