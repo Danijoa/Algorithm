@@ -135,7 +135,7 @@ int Dijkstra(int size, pair<int, int> target)
         int curDist = -1 * myQ.top().distance;
         myQ.pop();
 
-        if (curDist > dist[curX][curY])
+        if (curDist > dist[curX][curY])	// curDist가 큐에 들어갈 때는 dist[curX][curY](=curDist)가 최단거리였지만, 그 사이 dist[curX][curY]가 바뀌었을 수도 있으니까
             continue;
 
         for (int i = 0; i < 4; i++)
@@ -147,7 +147,7 @@ int Dijkstra(int size, pair<int, int> target)
             if (nextX < 0 || nextX >= size || nextY < 0 || nextY >= size)
                 continue;
 
-           if (dist[nextX][nextY] > dist[curX][curY] + nextDist)		//dist[curX][curY] curDist
+           if (dist[nextX][nextY] > dist[curX][curY] + nextDist)	
             {
                 dist[nextX][nextY] = dist[curX][curY] + nextDist;
                 myQ.push({ -1 * dist[nextX][nextY], nextX , nextY });
