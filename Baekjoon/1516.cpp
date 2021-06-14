@@ -6,82 +6,93 @@ using namespace std;
 
 int main()
 {
-	int num;
-	cin >> num;
+	// 총 빌딩 개수
+	int build;	
+	cin >> build;
 
-	int buildTime[MAX] = { 0 }; //각 빌딩 짓는 시간 저장 + 선행 빌딩 시간 추가
-	int indegree[MAX] = { 0 };
-	vector<int> preV[MAX];
-	for (int i = 1; i <= num; i++)
+	// 각 빌딩 짓기 위한 시간
+	int buildTime[MAX];	
+	fill(&buildTime[0], &buildTime[MAX - 1], 0);
+	// 선 빌딩 개수 
+	int buildDegree[MAX];	
+	fill(&buildDegree[0], &buildDegree[MAX - 1], 0);
+	//선 빌딩 번호
+	vector<int> preBuildNum[MAX];	
+
+	// 셋팅
+	for (int i = 1; i <= build; i++)
 	{
-		int time;
-		cin >> time;
-		buildTime[i] = time;
+		cin >> buildTime[i];
 
 		while (true)
 		{
 			int pre;
 			cin >> pre;
 			if (pre == -1)
-			{
 				break;
-			}
-			preV[pre].push_back(i); //pre->i
-			indegree[i]++;
+
+			buildDegree[i]++;
+			// 1: [0] 
+			// 2: [1]
+			// 3: [1]
+			// 4: [2]
+			// 5: [1]
+
+			preBuildNum[pre].push_back(i);	
+			// 1 -> 2, 3, 4 
+			// 2 ->
+			// 3 -> 4, 5
+			// 4 ->
+			// 5 ->
 		}
 	}
-/*
-[indegree]
-0 1 1 2 1
-[preV]
-1 ->2->3->4
-2
-3 ->4->5
-4
-5
-*/
+	
+	// 빌딩 짓기 위한 총 시간
+	int totalBuildTime[MAX];
+	fill(&totalBuildTime[0], &totalBuildTime[MAX - 1], 0);
 
-	int resultTime[MAX] = { 0 }; 
-	//result[i] = 우선적으로 지어야 하는 건물들 중에서 가장 오래 걸리는 시간 + i건물 짓기 위해 걸리는 시간
-
-	queue<int> buildQ;
-	for (int i = 1; i <= num; i++)
+	// 선 빌딩 없는 것 부터 시작(가장  먼저 시작해야 하는 것 부터)
+	queue<int> myQ;
+	for (int i = 1; i <= build; i++)
 	{
-		if (indegree[i] == 0)
+		if (buildDegree[i] == 0)	//1
 		{
-			buildQ.push(i); //1
-			resultTime[i] = buildTime[i]; //resultTime[1] = 10
+			myQ.push(i);
+			totalBuildTime[i] = buildTime[i];
 		}
 	}
 
-	while (!buildQ.empty())
+	// 계산
+	while (!myQ.empty())
 	{
-		int curBuild = buildQ.front(); //1 //2 //3
-		buildQ.pop();
+		int curBuildNum = myQ.front();	// 1 // 2 // 3
+		myQ.pop();
 
-		for (int i = 0; i < preV[curBuild].size(); i++) //2 3 4 //- //4 5
+		for (int i = 0; i < preBuildNum[curBuildNum].size(); i++)	// 2 3 4	// - // 4 5
 		{
-			int nextBuild = preV[curBuild][i];
-			indegree[nextBuild]--;
+			int nextBuildNum = preBuildNum[curBuildNum][i];
+			buildDegree[nextBuildNum] -= 1;
 
-			resultTime[nextBuild] = max(resultTime[nextBuild], resultTime[curBuild] + buildTime[nextBuild]);
-			//result[2] = max(0, 10+10) = 20
-			//result[3] = max(0, 10+4) = 14
-			//result[4] = max(0, 10+4) = 14
-			//-
-			//result[4] = max(14, 14+4) = 18
-			//result[5] = max(0, 14+3) = 17 ...
+			totalBuildTime[nextBuildNum]
+				= max(totalBuildTime[nextBuildNum], totalBuildTime[curBuildNum] + buildTime[nextBuildNum]);
+			// result[2] = max(0, 10+10) = 20
+			// result[3] = max(0, 10+4) = 14
+			// result[4] = max(0, 10+4) = 14
+			// -
+			// result[4] = max(14, 14+4) = 18
+			// result[5] = max(0, 14+3) = 17 ...
 
-			if (indegree[nextBuild] == 0)
-			{
-				buildQ.push(nextBuild); //2 3 //- //4 5 
-			}
+			if (buildDegree[nextBuildNum] == 0)
+				myQ.push(nextBuildNum);	// 2 3 // - // 4 5 
 		}
-
 	}
 
-	for (int i = 1; i <= num; i++)
+
+	for (int i = 1; i <= build; i++)
 	{
-		cout << resultTime[i] << "\n";
+		cout << totalBuildTime[i] << "\n";
 	}
+
+	return 0;
 }
+ 
