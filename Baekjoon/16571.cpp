@@ -1,112 +1,103 @@
 #include <iostream>
-#include <cmath>
+#include <algorithm>
 using namespace std;
 
-bool checkCurTurn(int ttt[3][3], int curTurn)
+int map[3][3];
+int cntTurn = 0;
+
+bool checkWin(int turn)
 {
-    int opp = 3 - curTurn; //상대방
+	// 가로 3줄 빙고 확인
+	for (int i = 0; i < 3; i++)
+	{
+		if (map[i][0] == turn && map[i][0] == map[i][1] && map[i][1] == map[i][2])
+			return true;
+	}
 
-    for (int i = 0; i < 3; i++) //가로 3줄 빙고 확인
-    {
-        if (ttt[i][0] == opp && ((ttt[i][0] == ttt[i][1]) &&(ttt[i][1] == ttt[i][2])))
-        {
-            return false;  //curTurn 패배
-        }
-    }
+	// 세로 3줄 빙고 확인
+	for (int j = 0; j < 3; j++)
+	{
+		if (map[0][j] == turn && map[0][j] == map[1][j] && map[1][j] == map[2][j])
+			return true;
+	}
 
-    for (int j = 0; j < 3; j++) //세로 3줄 빙고 확인
-    {
-        if (ttt[0][j] == opp && ((ttt[0][j] == ttt[1][j]) &&(ttt[1][j] == ttt[2][j])))
-        {
-            return false;
-        }
-    }
+	// ↘
+	if (map[0][0] == turn && map[0][0] == map[1][1] && map[1][1] == map[2][2])
+		return true;
 
-    if (ttt[0][0] == opp && ((ttt[0][0] == ttt[1][1]) && (ttt[1][1] == ttt[2][2]))) //오위-왼아래 대각선 빙고 확인
-    {
-        return false;
-    }
+	// ↙
+	if (map[0][2] == turn && map[0][2] == map[1][1] && map[1][1] == map[2][0])
+		return true;
 
-    if (ttt[0][2] == opp && ((ttt[0][2] == ttt[1][1]) && (ttt[1][1] == ttt[2][0]))) //오아래-왼위 대각선 빙고 확인
-    {
-        return false;
-    }
-
-    return true; //빙고 없음
+	// 그 외
+	return false;
 }
 
-int solution(int ttt[3][3], int curTurn)
+int backTrack(int myTurn)
 {
-    if (checkCurTurn(ttt, curTurn) == false) //curTurn가 수를 둔 상태에서 curTurn의 승패 확인
-    {
-        return -1; //curTurn 패배
-    }
-    
-    int check = 2; //-1(op 패배) 0(동점) 1(opp 승리) 2(의미 없는 수)
-    for (int i = 0; i < 3; i++)
-    {
-        for(int j=0; j<3; j++)
-        {
-            if (ttt[i][j] == 0) //curTurn가 수를 둘수 있는 위치
-            {
-                ttt[i][j] = curTurn;
-                check = min(check, solution(ttt, 3-curTurn)); //solution(ttt, 3-curTurn)이 -1을 반환 한다는 뜻은 상대방이 패했다는 것
-                ttt[i][j] = 0; //백트래킹
-            }
-        }
-    }
+	// 상대방이 이긴 경우
+	int oppTurn = 3 - myTurn;
+	if (checkWin(oppTurn) == true)
+		return -1;
 
-    if (check == 2 || check == 0)
-    {
-        return 0;
-    }
-    else if (check == -1)
-    {
-        return 1;
-    }
-    else if (check == 1)
-    {
-        return -1;
-    }
+	// 브루트 포스 : 가능한 모든 경우의 수를 완전(전체) 탐색
+	int result = 2;
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (map[i][j] == 0)
+			{
+				map[i][j] = myTurn;	// 비어있는 곳에 놓기
 
+				/* 모든 경우의 수에서 한번이라도 -1이 있다면  내가 이기는 경우가 존재한다는 뜻 */
+				// 현재 상태에서 상대방이 놓은 수의 최종 결과 반환하는 
+				// backTrack(oppTurn)가 -1 이면 
+				// myTurn 즉, 내가 이긴 것이다
+				result = min(result, backTrack(oppTurn));
+
+				map[i][j] = 0;	// 다시 되돌리기
+			}
+		}
+	}
+
+	// 짐
+	if (result == 1)
+		return -1;
+
+	// 이김
+	if (result == -1)
+		return 1;
+
+	// 무승부: result == 2, 0
+	return 0;
 }
 
 int main()
 {
-    int ttt[3][3];
-    int cnt = 0;
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            cin >> ttt[i][j];
-            if (ttt[i][j] != 0)
-            {
-                cnt++;
-            }
-        }
-    }
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			cin >> map[i][j];
+			if (map[i][j] != 0)
+				cntTurn++;
+		}
+	}
 
-    int result;
-    if (cnt % 2 == 0) //1 차례(1이 이기면 W)
-    {
-        result = solution(ttt, 1);
-    }
-    else //2 차례(2가 이기면 W)
-    {
-        result = solution(ttt, 2);
-    }
+	int ans;
+	if (cntTurn % 2 == 0)	// 1 차례
+		ans = backTrack(1);
+	else	// 2 차례
+		ans = backTrack(2);
 
-    if (result == 0)
-    {
-        cout << "D";
-    }
-    else if (result == 1)
-    {
-        cout << "W";
-    }
-    else if (result == -1)
-    {
-        cout << "L";
-    }
+	if (ans == 0)
+		cout << "D";
+	else if (ans == 1)
+		cout << "W";
+	else
+		cout << "L";
+
+	return 0;
 }
+ 
