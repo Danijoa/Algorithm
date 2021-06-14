@@ -68,7 +68,7 @@ int main()
 		int curBuildNum = myQ.front();	// 1 // 2 // 3
 		myQ.pop();
 
-		for (int i = 0; i < preBuildNum[curBuildNum].size(); i++)	// 2 3 4	// - // 4 5
+		for (int i = 0; i < preBuildNum[curBuildNum].size(); i++)	// 2 3 4 // - // 4 5
 		{
 			int nextBuildNum = preBuildNum[curBuildNum][i];
 			buildDegree[nextBuildNum] -= 1;
