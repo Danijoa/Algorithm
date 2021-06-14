@@ -6,6 +6,13 @@ int ring;
 int move;
 vector<pair<int, int>> answer;
 
+// [1 2 3 4 5]  [      ]  [      ] 이렇게 세 기둥이 있다고 생각
+// [(1 2 3 4)+(5)]  [      ]  [      ] 첫 기둥에 있는 링을 두 묶으로 생각하면
+// [5]  [(1 2 3 4)]  [      ]
+// [      ]  [(1 2 3 4)]  [5]
+// [(1 2 3 4)]  [      ]  [5]
+// [(1 2 3)+(4)] [      ]  [5] ... 이렇게 반복
+
 void Hanoi(int ring, int from, int by, int to)
 {
 	if (ring == 1)
