@@ -60,7 +60,7 @@ int kruskal()
 
 bool isAllConnected(int label)
 {
-	// 
+	// 모든 모드(섬)의 부모(루트)가 같으면 연결되어 
 	int parent = find(1);
 	for (int i = 2; i <= label; i++)
 		if (parent != find(i))
