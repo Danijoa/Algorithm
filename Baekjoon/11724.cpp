@@ -1,65 +1,50 @@
-#include <iostream>
+#include<iostream>
+#include <algorithm>
+#include <vector>
 #include <queue>
 using namespace std;
 
-int n, m;	//정점개수, 간선개수
-int** myList;	//인접행렬
-int answer = 0;
-int* visited;	//방문확인
+int v, e;
+vector<vector<int>> myV;
+//vector<int> myV[1001];
+bool visited[1001] = { false, };
 
-void BFS(int vertex)
+void DFS(int num)
 {
-	answer++;
+	visited[num] = true;
 
-	queue<int> myQ;
-	myQ.push(vertex);
-
-	while (myQ.empty() != true)
+	for (int i = 0; i < myV[num].size(); i++)
 	{
-		vertex = myQ.front();
-		myQ.pop();
-
-		for (int i = 1; i < n+1; i++)
-		{
-			if (myList[vertex][i] == 1 && visited[i] != 1)
-			{
-				visited[i] = 1;
-				myQ.push(i);
-			}
-		}
+		int temp = myV[num][i];
+		if (visited[temp] == false)
+			DFS(temp);
 	}
 }
 
 int main()
 {
-	cin >> n >> m;
+	cin >> v >> e;
 
-	myList = new int* [n+1];	//인접행렬
-	for (int i = 0; i < n+1; i++)
-	{
-		myList[i] = new int[n+1];
-	}
-
+	myV.resize(1001);
 	int a, b;
-	for (int i = 1; i <= m; i++)	//연결되어있으면 1
+	for (int i = 0; i < e; i++)
 	{
 		cin >> a >> b;
-		myList[a][b] = 1;
-		myList[b][a] = 1;
+		myV[a].push_back(b);
+		myV[b].push_back(a);
 	}
 
-	visited = new int[n + 1];	//방문확인
-	for (int i = 0; i < n + 1; i++)
+	int cnt = 0;
+	for (int i = 1; i <= v; i++)
 	{
-		visited[i] = 0;
-	}
-	for (int i = 1; i < n + 1; i++)	//0은 무시 1~n확인
-	{
-		if (visited[i] == 0)
+		if (visited[i] == false)
 		{
-			BFS(i);
+			cnt++;
+			DFS(i);
 		}
 	}
 
-	cout << answer;
+	cout << cnt;
+
+	return 0;
 }
