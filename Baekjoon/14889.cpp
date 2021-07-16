@@ -1,71 +1,69 @@
 #include <iostream>
 #include <vector>
+#define MAX 21
+#define INF 987654321
 using namespace std;
 
-int N;
-int S[21][21];
-int diff = 987654321;
-bool isUsed[21];
+int player;
+int chemi[MAX][MAX];
+int minDiff = INF;
 
-void solution(int cnt, int index)
+bool isUsed[MAX];
+
+void calDiff(int cnt, int playerIndex)
 {
-	if (cnt == N / 2)
+	// DFS
+	if (cnt == player / 2)
 	{
+		// 스타트팀 & 링크팀
 		vector<int> start;
 		vector<int> link;
 
-		for (int i = 1; i <= N; i++)
+		for (int i = 0; i < player; i++)
 		{
 			if (isUsed[i])
-			{
 				start.push_back(i);
-			}
 			else
 				link.push_back(i);
 		}
 
 		int a = 0, b = 0;
-		for (int i = 0; i < N / 2; i++)
+		for (int i = 0; i < player / 2; i++)
 		{
-			for (int j = 0; j < N / 2; j++)
+			for (int j = 0; j < player / 2; j++)
 			{
-				a += S[start[i]][start[j]];// +S[start[j]][start[i]];
-				b += S[link[i]][link[j]];// +S[link[j]][link[i]];
+				a += chemi[start[i]][start[j]];
+				b += chemi[link[i]][link[j]];
 			}
 		}
 
-		diff = diff > abs(a - b) ? abs(a - b) : diff;
+		if (minDiff > abs(a - b))
+			minDiff = abs(a - b);
 
 		return;
 	}
- 
-	for (int i = index + 1; i <= N; i++)
+
+	// 백트레킹
+	for (int i = playerIndex; i < player; i++)
 	{
 		if (!isUsed[i])
 		{
 			isUsed[i] = true;
-			solution(cnt + 1, i);
+			calDiff(cnt + 1, i + 1);
 			isUsed[i] = false;
 		}
 	}
-
 }
 
 int main()
 {
-	cin >> N;
+	cin >> player;
+	
+	for (int i = 0; i < player; i++)
+		for (int j = 0; j < player; j++)
+			cin >> chemi[i][j];
 
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			cin >> S[i][j];
-		}
-	}
+	calDiff(0, 0);
 
-	solution(0, 0);
-
-	cout << diff;
-
-	return 0;
+	cout << minDiff;
 }
