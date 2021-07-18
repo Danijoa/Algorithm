@@ -1,94 +1,62 @@
 #include <iostream>
+#define MAX 101
 using namespace std;
 
-int vill;
-int vil_l;
+int cityNum;
 int busNum;
-int** bus;
+int start, dest, cost;
+int costGraph[MAX][MAX] = { 0, };
 
-void floyd()
+// 모든 노드 사이의 최단거리 구하기니까 플로이드와샬
+void floydW()
 {
-	//2->1->3,4,5
-	//3->1->2,4,5
-	//4->1->2,3,5
-	//5->1->2,3,4
-	//-----------
-	//1->2->3,4,5
-	//3->2->1,4,5
-	//...
-	for (int via = 1; via <= vill; via++)
+	// via : 거쳐가는 노드
+	for (int via = 1; via <= cityNum; via++)	
 	{
-		//출발지점과 통과지점 사이 아직 길이 없는 경우
-		for (int from = 1; from <= vill; from++)
+		// from : 시작 노드
+		for (int from = 1; from <= cityNum; from++)
 		{
-			if (bus[from][via] == 0)
+			if (costGraph[from][via] == 0)
 				continue;
 
-			for (int to = 1; to <= vill; to++)
+			// to : 도착노드
+			for (int to = 1; to <= cityNum; to++)
 			{
-				//출발지와 도착지가 같은 경우 or 통과지점과 도착지점 사이 아직 길이 없는 경우
-				if (from == to || bus[via][to] == 0)
+				if (from == to || costGraph[via][to] == 0)
 					continue;
 
-				//출발지점에서 도착지점까지 직행은 없지만 통과해서 가는 길이 있는 경우
-				//or 출발지점에서 도착지점까지 직행 보다 통과해서 가는 길이 더 빠른 경우
-				if (bus[from][to] == 0 ||
-					bus[from][to] > bus[from][via] + bus[via][to])
-					bus[from][to] = bus[from][via] + bus[via][to];
+				// 갱신해서 저장 : 시작->도착 경로를 거쳐가는 노드를 바꿔가면서 확인
+				if (costGraph[from][to] == 0 ||
+					costGraph[from][to] > costGraph[from][via] + costGraph[via][to])
+					costGraph[from][to] = costGraph[from][via] + costGraph[via][to];
 			}
 		}
+
 	}
+
 }
 
 int main()
 {
-	//마을 개수 입력
-	cin >> vill;
-
-	//버스 노선 개수 입력
+	cin >> cityNum;
 	cin >> busNum;
 
-	//버느 노선 생성
-	vil_l = vill + 1;
-	bus = new int* [vil_l];
-	for (int x = 0; x < vil_l; x++)
-	{
-		bus[x] = new int[vil_l];
-	}
-
-	//버스 노선 초기화
-	for (int x= 0; x < vil_l; x++)
-	{
-		for (int y = 0; y <vil_l; y++)
-		{
-			bus[x][y] = 0;
-		}
-	}
-
-	//버스 노선 값 입력
 	for (int i = 0; i < busNum; i++)
 	{
-		int a = 0, b = 0, c = 0;
-		cin >> a >> b >> c;
-		if (bus[a][b] != 0)	//최단경로 저장
-		{
-			if(bus[a][b] > c)
-				bus[a][b] = c;
-		}
-		else
-			bus[a][b] = c;
+		cin >> start >> dest >> cost;
+		if ((costGraph[start][dest] != 0 && costGraph[start][dest] > cost)
+			|| costGraph[start][dest] == 0)
+			costGraph[start][dest] = cost;
 	}
 
-	//플로이드
-	floyd();
+	floydW();
 
-	//결과
-	for (int x= 1; x < vil_l; x++)
+	for (int i = 1; i <= cityNum; i++)
 	{
-		for (int y = 1; y < vil_l; y++)
+		for (int j = 1; j <= cityNum; j++)
 		{
-			cout << bus[x][y] << " ";
+			cout << costGraph[i][j] << " ";
 		}
-		cout << "\n";
-	}
+		cout << endl;
+	}  
 }
