@@ -3,97 +3,84 @@
 #define MAX 625
 using namespace std;
 
-int v;
+int num;
+int** vill;
 
-int** myVill;
-int** check;
+int** label;
+int dir[4][2] = { {-1, 0},  {1, 0}, {0, -1}, {0, 1} };
 
-int people[MAX];
-int number = 0;
-
-int dx[4] = { -1, 1, 0, 0 };
-int dy[4] = { 0, 0, -1, 1 };
+int curLabel;
+int people[MAX] = { 0, };
 
 void DFS(int x, int y)
 {
-	check[x][y] = 1;
-	people[number]++;
+	label[x][y] = curLabel;
+	people[curLabel]++;
 
 	for (int i = 0; i < 4; i++)
 	{
-		int tx = x + dx[i];
-		int ty = y + dy[i];
-		if ((0 <= tx && tx < v) && (0 <= ty && ty < v))
-		{
-			if (myVill[tx][ty] == 1 && check[tx][ty] == 0)
-			{
-				DFS(tx, ty);
-			}
-		}
+		int nx = x + dir[i][0];
+		int ny = y + dir[i][1];
+
+		if (nx < 0 || nx >= num || ny < 0 || ny >= num)
+			continue;
+
+		if (vill[nx][ny] == 1 && label[nx][ny] == 0)
+			DFS(nx, ny);
 	}
 }
 
 int main()
 {
-	//크기
-	cin >> v;
+	cin >> num;
 
-	//myVill 생성
-	myVill = new int* [v];
-	for (int i = 0; i < v; i++)
+	vill = new int*[num];
+	label = new int* [num];
+	for (int i = 0; i < num; i++)
 	{
-		myVill[i] = new int[v];
+		vill[i] = new int[num];
+		label[i] = new int[num];
 	}
 
-	for (int i = 0; i < v; i++)
+	for (int i = 0; i < num; i++)
 	{
-		for (int j = 0; j < v; j++)
+		for (int j = 0; j < num; j++)
 		{
-			scanf("%1d", &myVill[i][j]);
+			vill[i][j] = 0;
+			label[i][j] = 0;
+			scanf_s("%1d", &vill[i][j]);
 		}
 	}
 
-	//check 생성
-	check = new int* [v];
-	for (int i = 0; i < v; i++)
-	{
-		check[i] = new int[v];
-	}
+	curLabel = 1;
 
-	for (int i = 0; i < v; i++)
+	for (int i = 0; i < num; i++)
 	{
-		for (int j = 0; j < v; j++)
+		for (int j = 0; j < num; j++)
 		{
-			check[i][j] = 0;
-		}
-	}
-
-	//people 생성
-	for (int i = 0; i < v*v; i++)
-	{
-		people[i] = 0;
-	}
-
-	//DFS
-	for (int i = 0; i < v; i++)
-	{
-		for (int j = 0; j < v; j++)
-		{
-			if (myVill[i][j] == 1 && check[i][j] == 0)
+			if (vill[i][j] == 1 && label[i][j] == 0)
 			{
 				DFS(i, j);
-				number++;
+				curLabel++;
 			}
 		}
 	}
 
-	//출력
-	cout << number << endl;
-	sort(people, people + number);
-	for (int i = 0; i < number; i++)
+	/*
+	for (int i = 0; i < num; i++)
 	{
-		cout << people[i];
-		if (i != number - 1)
-			cout << endl;
+		for (int j = 0; j < num; j++)
+		{
+			cout << label[i][j] << " ";
+		}
+		cout << endl;
+	}
+	*/
+
+	cout << curLabel - 1 << endl;
+	sort(people + 1, people + curLabel);
+	for (int i = 1; i <= curLabel - 1; i++)
+	{
+		cout << people[i] << endl;
 	}
 }
