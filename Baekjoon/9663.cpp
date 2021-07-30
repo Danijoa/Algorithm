@@ -1,71 +1,60 @@
 #include <iostream>
-#define MAX 15
 using namespace std;
 
-//queen[i] = j -> i열 j행에 퀸이 있다
-//5x5 체스판에 5개의 퀸을 놓을 수 있는 경우 중 하나
-//queen[1] = 1
-//queen[2] = 3
-//queen[3] = 5
-//queen[4] = 2
-//queen[5] = 4
-
-int num;
+int rowSize;
 int cnt = 0;
-int queen[MAX];
 
-bool check(int cur)
-{ 
-	//(1~cur-1)열에 있는 퀸을 비교해 가며
-	//42번째 줄에 있는 queen[row + 1] = i (= queen[cur]) 위치에
-	//퀸을 놓을 수 있는지 확인한다
-	for (int i = 1; i < cur; i++)	//열
+bool check(int checkRow, int queen[])
+{
+	for (int i = 1; i <= rowSize; i++)
 	{
-		if (queen[i] == queen[cur] || (abs(queen[i] - queen[cur]) == abs(i - cur)))	//위치 (같은 행에 있지 않다 || 대각선에 있다)
+		// 같은 열에(col) 또 다른 퀸이 있다
+		// 같은 대각선에 또 다른 퀸이 있다
+		if ((queen[i] == queen[checkRow])||
+			(abs(queen[i] - queen[checkRow]) == abs(i - checkRow)))
 		{
 			return false;
 		}
 	}
+
 	return true;
 }
 
-void backTrack(int row)
+void backTrack(int curRow, int queen[])
 {
-	if (row == num)	//퀸을 다 놓은 경우
-	{
+	// 퀸을 다 놓은 경우
+	if (curRow == rowSize)
 		cnt++;
-	}
-	else	//놓을 퀸이 남은 경우
+	// 놓을 퀸이 남아 있는 경우
+	else
 	{
-		for (int i = 1; i <= num; i++)	//+1열씩 증가해가며 퀸 놓을 자리를 확인한다
+		for (int i = 1; i <= rowSize; i++)
 		{
-			queen[row + 1] = i;	//여기 놓을 수 있는가?
-			if (check(row + 1))	//가능하면 진행
-			{
-				backTrack(row + 1);
-			}
+			// (curRow + 1)행 i열에 놓아보기
+			queen[curRow + 1] = i;
+			
+			// 놓을 수 있는 경우
+			if (check(curRow + 1, queen))
+				backTrack(rowSize, queen);
+			// 놓을 수 없는 경우
 			else
-			{
-				queen[row + 1] = 0;
-			}
+				queen[curRow + 1] = 0;
 		}
+
 	}
 }
 
 int main()
 {
-	//체스판 크기, 퀸 개수
-	cin >> num;
-	
-	//체스 첫 수를 1열 1행~num행에 퀸을 하나씩 놓아 보는 것으로 시작한다
-	for (int i = 1; i <= num; i++)
+	cin >> rowSize;
+
+	int queen[15];
+	for (int i = 1; i <= rowSize; i++)
 	{
+		// 1행 i열에 놓고 시작
 		queen[1] = i;
-		backTrack(1);
+		backTrack(1, queen);
 	}
 
-	//결과
 	cout << cnt;
-
-	return 0;
-}
+}  
