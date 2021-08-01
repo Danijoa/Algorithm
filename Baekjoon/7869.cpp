@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <math.h>
 using namespace std;
@@ -48,9 +47,10 @@ int main()
 	// 부분적으로 겹치는 부분이 존재한 경우
 	else
 	{
-		// 두 원 접점의 좌표
-		// x = (r1 * r1) - (r2 * r2) + (dist * dist) / (2 * dist)
-		// y = sqrt((dist * dist) - (x * x)) 
+		// 제 2 코사인 법칙 : 각도B와 마주보는 변은 b
+		// b² = c² + a² - (2 * b * c * cosB)
+		// cosB = (c² + a² - b²) / (2 * b * c)
+		// B = acos((c² + a² - b²) / (2 * b * c))
 
 		double aTheta = acos(((aR * aR) - (bR * bR) + (dist * dist)) / (2 * aR * dist));
 		aTheta *= 2;
@@ -66,7 +66,7 @@ int main()
 		// = r * r * (theta / 2)
 		// (2) 삼각형 넓이 = 밑변 * 높이 * 1/2
 		// = ab길이 * (ac길이 * sin(a각도)) * 1/2;
-
+		
 		double aA = (aR * aR * aTheta * 1 / 2) - (aR * aR * sin(aTheta) * 1 / 2);
 		double bA = (bR * bR * bTheta * 1 / 2) - (bR * bR * sin(bTheta) * 1 / 2);
 		
