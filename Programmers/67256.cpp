@@ -1,16 +1,15 @@
+#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <math.h>
 
 using namespace std;
 
-float CalDis(pair<int, int> a, pair<int, int> b)
+int CalDis(pair<int, int> a, pair<int, int> b)  //float
 {
-    int temp 
-        = (a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second);
-    
-    cout << sqrt((float)temp) << endl;
-    return sqrt((float)temp);
+    int temp = abs(a.first - b.first) + abs(a.second - b.second);
+    return temp;
 }
 
 pair<int, int> CalPos(int num)
@@ -25,7 +24,7 @@ pair<int, int> CalPos(int num)
     else
     {
         temp.first = (num - 1) / 3;
-        temp.second = num - (num - 1) / 3 - 1;
+        temp.second = num - temp.first * 3 - 1;
     }
 
     return temp;
@@ -41,7 +40,9 @@ string solution(vector<int> numbers, string hand)
     string answer = "";
 
     Coor curLeftPos, curRightPos, curNumPos;
-    float leftDis, rightDis;
+    curLeftPos.coor = { make_pair(3, 0) };
+    curRightPos.coor = { make_pair(3, 2) };
+    int leftDis, rightDis;
 
     for (int i = 0; i < numbers.size(); i++)
     {
@@ -89,12 +90,6 @@ string solution(vector<int> numbers, string hand)
                     curLeftPos.coor = curNumPos.coor;
                     answer += "L";
                 }
-                //string temp = leftDis > rightDis ? "R" : "L";
-                //if(temp == "R")
-                //    curRightPos.coor = curNumPos.coor;
-                //else
-                //    curLeftPos.coor = curNumPos.coor;
-                //answer += temp;
             }
         }
     }
