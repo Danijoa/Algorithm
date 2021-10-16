@@ -28,3 +28,22 @@ int main()
 
 	cout << hap;
 }
+
+/*
+	int n;
+	cin >> n;
+
+	int hap = 0, cnt = 1, digit = 9, result = 0;
+	while (hap + digit < n)
+	{
+		// 9 + 90 + ...
+		hap += digit;
+		// 9*1 + 90*2 + ...
+		result += digit * cnt;
+		cnt++;
+		digit *= 90;
+	}
+	result += (n - hap) * cnt;
+
+	cout << result;
+*/
