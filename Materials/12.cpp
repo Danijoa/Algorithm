@@ -41,7 +41,7 @@ int main()
 		// 9*1 + 90*2 + ...
 		result += digit * cnt;
 		cnt++;
-		digit *= 90;
+		digit *= 10;
 	}
 	result += (n - hap) * cnt;
 
