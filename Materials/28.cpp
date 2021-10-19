@@ -30,13 +30,9 @@ int main()
 		}
 	}
 
-	// 출력
-	cout << num << "! = ";
-	for (int i = 2; i <= num; i++)
-	{
-		if (sosuCnt[i] != 0)
-			cout << sosuCnt[i] << " ";
-	}
+	// 뒤에서 부터 0 개수 = 2 * 5 개수
+	int ans = sosuCnt[2] <= sosuCnt[5] ? sosuCnt[2] : sosuCnt[5];
+	cout << ans;
 
 	return 0;
 }
