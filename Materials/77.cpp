@@ -7,7 +7,7 @@ int parent[1001];
 int find(int f)
 {
     if (f == parent[f])
-        return f;
+        return f; 
 
     return parent[f] = find(parent[f]);
 }
