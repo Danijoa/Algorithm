@@ -1,4 +1,3 @@
-#include <iostream>
 #include <queue>
 
 using namespace std;
@@ -7,8 +6,8 @@ int mapS;
 int map[20][20];
 bool visit[20][20] = { false, };
 int cnt = 0;
-int dirX[4] = { 0, 0, 1, -1 };
-int dirY[4] = { 1, -1, 0, 0 };
+int dirX[8] = { 0, 0, 1, -1, -1, -1, 1, 1 };
+int dirY[8] = { 1, -1, 0, 0, -1, 1, -1, 1 };
 
 void bfs(int x, int y)
 {
@@ -22,7 +21,7 @@ void bfs(int x, int y)
         int curY = myQ.front().second;
         myQ.pop();
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
         {
             int nextX = curX + dirX[i];
             int nextY = curY + dirY[i];
@@ -54,7 +53,6 @@ int main(void)
         {
             if (visit[i][j] == false && map[i][j] == 1)
             {
-                cout << i << " " << j << endl;
                 cnt += 1;
                 bfs(i, j);
             }
